@@ -1,0 +1,71 @@
+﻿@model Web_APP_BTL.Models.Employee
+
+<div class="overlay" id="editEmployeeOverlay">
+    <div class="overlay-content">
+        <form id="editEmployeeForm" class="employee-edit-form">
+            <input type="hidden" name="EmpId" id="EmpId" />
+            <div class="form-group">
+                <label for="EmpName">Tên nhân viên</label>
+                <input type="text" name="EmpName" id="EmpName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="EmpPw">Mật khẩu</label>
+                <input type="text" name="EmpPw" id="EmpPw" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input type="email" name="Email" id="Email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="Phone">Số điện thoại</label>
+                <input type="text" name="Phone" id="Phone" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="HireDate">Ngày tuyển dụng</label>
+                <input type="date" name="HireDate" id="HireDate" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="DepartmentId">Phòng ban</label>
+                <input type="text" name="DepartmentId" id="DepartmentId" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="PositionId">Chức vụ</label>
+                <input type="text" name="PositionId" id="PositionId" class="form-control" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function submitEditEmployeeForm() {
+        const formData = {
+            EmpId: document.getElementById("EmpId").value,
+            EmpName: document.getElementById("EmpName").value,
+            EmpPw: document.getElementById("EmpPw").value,
+            Email: document.getElementById("Email").value,
+            Phone: document.getElementById("Phone").value,
+            HireDate: document.getElementById("HireDate").value,
+            DepartmentId: document.getElementById("DepartmentId").value,
+            PositionId: document.getElementById("PositionId").value
+        };
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        fetch('/Employee/Edit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': token
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cập nhật thành công!');
+                    closeEmployeeOverlay();
+                    location.reload();
+                } else {
+
+
+</script>

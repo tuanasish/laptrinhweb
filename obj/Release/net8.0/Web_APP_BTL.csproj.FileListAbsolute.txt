@@ -1,0 +1,8 @@
+C:\Users\Vu Anh Tuan\OneDrive\Documents\Lap Trinh Web\Web_APP_BTL\obj\Release\net8.0\Web_APP_BTL.csproj.AssemblyReference.cache
+C:\Users\Vu Anh Tuan\OneDrive\Documents\Lap Trinh Web\Web_APP_BTL\obj\Release\net8.0\Web_APP_BTL.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Vu Anh Tuan\OneDrive\Documents\Lap Trinh Web\Web_APP_BTL\obj\Release\net8.0\Web_APP_BTL.AssemblyInfoInputs.cache
+C:\Users\Vu Anh Tuan\OneDrive\Documents\Lap Trinh Web\Web_APP_BTL\obj\Release\net8.0\Web_APP_BTL.AssemblyInfo.cs
+C:\Users\Vu Anh Tuan\OneDrive\Documents\Lap Trinh Web\Web_APP_BTL\obj\Release\net8.0\Web_APP_BTL.csproj.CoreCompileInputs.cache
+C:\Users\Vu Anh Tuan\OneDrive\Documents\Lap Trinh Web\Web_APP_BTL\obj\Release\net8.0\Web_APP_BTL.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Vu Anh Tuan\OneDrive\Documents\Lap Trinh Web\Web_APP_BTL\obj\Release\net8.0\Web_APP_BTL.RazorAssemblyInfo.cache
+C:\Users\Vu Anh Tuan\OneDrive\Documents\Lap Trinh Web\Web_APP_BTL\obj\Release\net8.0\Web_APP_BTL.RazorAssemblyInfo.cs

@@ -1,0 +1,303 @@
+﻿@model IEnumerable<Web_APP_BTL.Models.Customer>
+
+<style>
+    .container {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .search-panel {
+        width: 170px;
+        margin-right: 20px;
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .table-container {
+        flex: 1;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .table th {
+        background-color: #f2f2f2;
+    }
+
+    .btn-add {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        color: #fff;
+        background-color: #28a745;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .overlay-content {
+        width: 90%;
+        max-width: 600px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        transform: scale(0.9);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .overlay-content.show {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1100;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+</style>
+
+<div class="container">
+    <div class="search-panel">
+        <h3>Tìm kiếm khách hàng</h3>
+        <div class="form-group">
+            <input type="text" 
+                   id="searchInput" 
+                   class="form-control" 
+                   placeholder="Tìm theo mã, tên khách hàng"
+                   onkeyup="searchCustomers()">
+        </div>
+    </div>
+
+    <div class="table-container">
+        <button type="button" class="btn btn-success mb-3" onclick="openAddOverlay()">
+            <i class="fas fa-plus"></i> Thêm khách hàng
+        </button>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Mã khách hàng</th>
+                    <th>Tên khách hàng</th>
+                    <th>Số điện thoại</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var customer in Model)
+                {
+                    <tr>
+                        <td>@customer.CustomerId</td>
+                        <td>@customer.CustomerName</td>
+                        <td>@customer.ContactInfo</td>
+                        <td>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="openOverlay(@customer.CustomerId)">
+                                <i class="fas fa-edit"></i> Sửa
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" 
+                                    onclick="openDeleteOverlay(@customer.CustomerId, '@customer.CustomerName')">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="overlay" id="deleteCustomerOverlay">
+    <div class="overlay-content">
+        <h3>Xác nhận xóa</h3>
+        <p>Bạn có chắc chắn muốn xóa khách hàng <strong id="customerNameToDelete"></strong>?</p>
+        <div class="mt-4">
+            <button class="btn btn-danger" onclick="confirmDelete()">Xóa</button>
+            <button class="btn btn-secondary" onclick="closeDeleteOverlay()">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Indicator -->
+<div class="loading" id="loadingIndicator">
+    <div class="spinner"></div>
+</div>
+
+@await Html.PartialAsync("Create")
+@await Html.PartialAsync("Edit")
+
+<script>
+    // Tìm kiếm khách hàng
+    function searchCustomers() {
+        const searchValue = document.getElementById('searchInput').value.toLowerCase();
+        const tableRows = document.querySelectorAll('.table tbody tr');
+
+        tableRows.forEach(row => {
+            const id = row.cells[0].textContent.toLowerCase();
+            const name = row.cells[1].textContent.toLowerCase();
+            const phone = row.cells[2].textContent.toLowerCase();
+
+            if (id.includes(searchValue) || name.includes(searchValue) || phone.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Xử lý Edit
+        // Hàm gọi Ajax để gửi dữ liệu
+        function submitEditForm() {
+            const formData = {
+            CustomerId: document.getElementById("CustomerId").value,
+        CustomerName: document.getElementById("CustomerName").value,
+        ContactInfo: document.getElementById("ContactInfo").value
+            };
+
+        // Lấy giá trị của AntiForgeryToken từ input ẩn
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        fetch('/Customer/Edit', {
+            method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        'RequestVerificationToken': token // Gửi token CSRF cùng với yêu cầu
+                },
+        body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (response.ok) {
+            closeOverlay();
+        location.reload(); // Reload lại trang để cập nhật danh sách
+                    } else {
+            console.error('Lỗi khi cập nhật khách hàng:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Có lỗi xảy ra:', error));
+        }
+
+
+
+    function openOverlay(customerId) {
+        console.log("Opening overlay for customer ID:", customerId); // Kiểm tra ID
+        fetch(`/Customer/GetCustomer?id=${customerId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("CustomerId").value = data.customerId;
+                document.getElementById("CustomerName").value = data.customerName;
+                document.getElementById("ContactInfo").value = data.contactInfo;
+
+                const overlay = document.getElementById("editCustomerOverlay");
+                overlay.style.display = "flex";
+                setTimeout(() => overlay.querySelector(".overlay-content").classList.add("show"), 10);
+            })
+            .catch(error => console.error("Error loading customer data:", error));
+    }
+    function closeOverlay() {
+        const overlayContent = document.getElementById("editCustomerOverlay").querySelector(".overlay-content");
+        overlayContent.classList.remove("show");
+        setTimeout(() => document.getElementById("editCustomerOverlay").style.display = "none", 300);
+    }
+
+    // Xử lý Add
+    function openAddOverlay() {
+        const overlay = document.getElementById("addCustomerOverlay");
+        overlay.style.display = "flex";
+        setTimeout(() => overlay.querySelector(".overlay-content").classList.add("show"), 10);
+    }
+
+    function closeAddOverlay() {
+        const overlayContent = document.getElementById("addCustomerOverlay").querySelector(".overlay-content");
+        overlayContent.classList.remove("show");
+        setTimeout(() => document.getElementById("addCustomerOverlay").style.display = "none", 300);
+    }
+
+    // Xử lý Delete
+    // Hàm hiển thị overlay xóa và cập nhật thông tin khách hàng cần xóa
+    let customerIdToDelete = null;
+
+    function openDeleteOverlay(customerId, customerName) {
+        customerIdToDelete = customerId;
+        document.getElementById("customerNameToDelete").innerText = customerName;
+        const deleteOverlay = document.getElementById("deleteCustomerOverlay");
+        deleteOverlay.style.display = 'flex';
+        setTimeout(() => deleteOverlay.querySelector(".overlay-content").classList.add("show"), 10);
+    }
+
+    // Hàm ẩn overlay xóa
+    function closeDeleteOverlay() {
+        customerIdToDelete = null;
+        const deleteOverlayContent = document.getElementById("deleteCustomerOverlay").querySelector(".overlay-content");
+        deleteOverlayContent.classList.remove("show");
+        setTimeout(() => document.getElementById("deleteCustomerOverlay").style.display = "none", 300);
+    }
+
+    // Hàm xác nhận xóa khách hàng
+    function confirmDelete() {
+        if (customerIdToDelete) {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch(`/Customer/DeleteConfirmed/${customerIdToDelete}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        closeDeleteOverlay();
+                        location.reload(); // Tải lại trang sau khi xóa
+                    } else {
+                        throw new Error('Lỗi khi xóa khách hàng');
+                    }
+                })
+                .catch(error => console.error("Lỗi khi thực hiện yêu cầu xóa:", error));
+        }
+    }
+
+</script>

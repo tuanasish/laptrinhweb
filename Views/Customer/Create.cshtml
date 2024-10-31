@@ -1,0 +1,89 @@
+﻿
+ <style>
+    /* Căn giữa toàn bộ nội dung overlay */
+    .overlay-content {
+        background-color: #e0f7ff;
+        padding: 20px;
+        border-radius: 10px;
+        width: 500px;
+        box-shadow: 0px 0px 20px rgba(0, 51, 102, 0.4);
+        text-align: center; /* Căn giữa nội dung bên trong */
+    }
+
+    /* Căn giữa tiêu đề */
+    .text-primary {
+        color: #004080;
+        font-weight: bold;
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    .btn-success {
+        background-color: #0066cc;
+        border-color: #004080;
+        color: #ffffff;
+        width: 100px;
+        padding: 10px 0;
+        border-radius: 6px;
+    }
+
+    /* Căn giữa nhãn và ô nhập liệu */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        color: #003366;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        width: 80%; /* Đặt chiều rộng cố định để các ô nhập đều nhau */
+        padding: 10px;
+        border: 1px solid #0066cc;
+        border-radius: 6px;
+        box-sizing: border-box;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        height: 100px;
+    }
+
+    /* Căn giữa các nút */
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    
+ </style>
+
+
+    <div class="overlay" id="addCustomerOverlay">
+        <div class="overlay-content">
+            <h2 class="text-primary">Thêm khách hàng</h2>
+            <form asp-action="Create" method="post" class="customer-add-form">
+                <div class="form-group">
+                    <label for="CustomerName" class="form-label">Tên khách hàng</label>
+                    <input type="text" class="form-control" name="CustomerName" id="NewCustomerName" placeholder="Nhập tên khách hàng" />
+                    <span id="NewCustomerNameError" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label for="ContactInfo" class="form-label">Thông tin liên hệ</label>
+                    <textarea class="form-control" name="ContactInfo" id="NewContactInfo" placeholder="Nhập thông tin liên hệ"></textarea>
+                    <span id="NewContactInfoError" class="text-danger"></span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAddOverlay()">Đóng</button>
+                </div>
+            </form>
+        </div>
+    </div>
